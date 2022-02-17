@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг»
 
 * Студент: [Павел Клёсов](https://up.htmlacademy.ru/javascript/25/user/339239).
-* Наставник: `Неизвестно`.
+* Наставник: [Никита Сигов](https://htmlacademy.ru/profile/crazer).
 
 ---
 
