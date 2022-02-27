@@ -26,3 +26,21 @@ const getRandomFloatingPoint = (smallestValue, greatestValue, resultPrecision) =
     console.log('Ошибка! В диапазоне не может быть отрицательных чисел.');
   }
 };
+
+const getAuthor = () => {
+
+};
+
+const getOffer = () => {
+
+};
+
+const getLocation = () => {
+
+};
+
+const createBookingObject = () => ({
+  author: getAuthor(),
+  offer: getOffer(),
+  location: getLocation(),
+});
