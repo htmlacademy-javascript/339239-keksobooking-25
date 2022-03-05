@@ -66,62 +66,33 @@ const getRandomFloatingPoint = (smallestValue, greatestValue, resultPrecision) =
 
 const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length-1)];
 
-const getOfferFeatures = () => {
-  const features = [];
-  for (let i = 0; i < OFFER_FEATURES.length - 1; i++) {
-    //Если выдает единицу, то записываем в возвращаемый массив значение.
-    //Может быть такое, что вернётся пустой массив, но в ТЗ не указано что так нельзя.
-    //Да и это логично - может же быть предложение без всяких жизненных радостей вроде Wi-Fi
-    if (getRandomInteger(0, 1) === 1) {
-      features.push(OFFER_FEATURES[i]);
-    }
-  }
-  return features;
-};
-
-const getAuthor = () => {
-  let imageNumber = getRandomInteger(1, 10);
-  if (imageNumber === 10) {
-    imageNumber = `${imageNumber}`;
-  } else {
-    imageNumber = `0${imageNumber}`;
-  }
-  return {
-    avatar: `img/avatars/user${imageNumber}.png`
-  };
-};
-
-const getOffer = () => {
+function getOffer (location) {
   const offer = {
     title: 'Заголовок, который меня попросили придумать самостоятельно',
-    address: '',
+    address: Object.values(location).join(', '),
     price: getRandomInteger(1, MAX_PRICE),
     type: getRandomArrayElement(OFFER_TYPE),
     rooms: getRandomInteger(1, MAX_ROOMS),
     guests: getRandomInteger(1, MAX_GUESTS),
     checkin: getRandomArrayElement(CHECKIN_CHECKOUT_TIME),
     checkout: getRandomArrayElement(CHECKIN_CHECKOUT_TIME),
-    features: getOfferFeatures(),
+    features: OFFER_FEATURES.slice(0, getRandomInteger(0, OFFER_FEATURES.length - 1)),
     description: 'Описание, которое меня попросили придумать самостоятельно',
-    photos: getRandomArrayElement(OFFER_PHOTOS),
+    photos: Array.from({length: getRandomInteger(0, OFFER_PHOTOS.length)}, (_, index) => OFFER_PHOTOS[index]),
   };
   return offer;
-};
+}
 
-const getLocation = () => ({
-  lat: getRandomFloatingPoint(35.65000, 35.70000, 5),
-  lng: getRandomFloatingPoint(139.70000, 139.80000, 5),
-});
-
-const createAdvertisement = () => {
-  const advertisement = {
-    author: getAuthor(),
-    offer: getOffer(),
-    location: getLocation(),
+const createAdvertisement = (_, index = 0) => {
+  const advertisementLocation = {
+    lat: getRandomFloatingPoint(35.65000, 35.70000, 5),
+    lng: getRandomFloatingPoint(139.70000, 139.80000, 5),
   };
-
-  //Временно записываем в адрес предложения координаты
-  advertisement.offer.address = Object.values(advertisement.location).join(', ');
+  const advertisement = {
+    author: {avatar: index === 9 ? `img/avatars/user${index+1}.png}` : `img/avatars/user0${index+1}.png}`},
+    location: advertisementLocation,
+    offer: getOffer(advertisementLocation),
+  };
 
   return advertisement;
 };
