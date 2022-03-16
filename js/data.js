@@ -1,7 +1,7 @@
 import {getRandomInteger, getRandomFloatingPoint, getRandomArrayElement} from './utils.js';
 
 //Массивы констант для генерации
-const MAX_PRICE = 15000;
+const MAX_PRICE = 100000;
 
 const MAX_ROOMS = 10;
 
@@ -59,7 +59,7 @@ const createAdvertisement = (_, index = 0) => {
     lng: getRandomFloatingPoint(139.70000, 139.80000, 5),
   };
   const advertisement = {
-    author: {avatar: index === 9 ? `img/avatars/user${index+1}.png}` : `img/avatars/user0${index+1}.png}`},
+    author: {avatar: index === 9 ? `img/avatars/user${index+1}.png` : `img/avatars/user0${index+1}.png`},
     location: advertisementLocation,
     offer: getOffer(advertisementLocation),
   };
