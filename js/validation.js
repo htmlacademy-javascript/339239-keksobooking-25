@@ -1,46 +1,61 @@
 const advertisementForm = document.querySelector('.ad-form');
-const roomAmount = document.querySelector('#room_number');
-const guestAmount = document.querySelector('#capacity');
+const guestNumberField = advertisementForm.querySelector('#capacity');
+const roomsNumberField = advertisementForm.querySelector('#room_number');
 
 const validationConfig = {
   classTo: 'ad-form__element',
   errorTextParent: 'ad-form__element',
 };
 
+const guestsForRoomsAmount = {
+  '100': ['0'],
+  '1': ['1'],
+  '2': ['1', '2'],
+  '3': ['1', '2', '3'],
+};
+
 const pristine = new Pristine(advertisementForm, validationConfig);
 
-// Валидация стандартных полей
+const validateTitle = (value) => value.length >= 30 && value.length <= 100;
+
+const validatePrice = (value) => value <= 100000;
+
+//Возвращаем соответствующее сообщение об ошибке в зависимости от выбора пользователя
+const getGuestAmountError = () => {
+  if (roomsNumberField.value === '100') {
+    return 'В жилье с данным количеством комнат не могут быть размещены гости';
+  } else if (guestNumberField.value === '0') {
+    return 'Выберите количество гостей';
+  }
+  return 'Комнат не может быть меньше чем гостей';
+};
+
+//Функция проверки количества гостей
+const validateGuests = (value) => guestsForRoomsAmount[roomsNumberField.value].includes(value);
+
+//Валидация заголовка
+pristine.addValidator(
+  advertisementForm.querySelector('#title'),
+  validateTitle,
+  'Длина заголовка должна быть от 30 до 100 символов'
+);
+
+//Валидация количества комнат и гостей
+pristine.addValidator(
+  guestNumberField,
+  validateGuests,
+  getGuestAmountError);
+
+//Валидация цены за ночь
+pristine.addValidator(
+  advertisementForm.querySelector('#price'),
+  validatePrice,
+  'Цена не может быть выше 100000 руб.'
+);
+
 advertisementForm.addEventListener('submit', (evt) => {
   const isValid = pristine.validate();
-
   if (!isValid) {
     evt.preventDefault();
   }
 });
-
-//Проверка, есть ли гости + 100 комнат
-pristine.addValidator(roomAmount, () => {
-  if(roomAmount.value === '100') {
-    if(guestAmount.value === '0') {
-      return true;
-    }
-  } else {
-    return true;
-  }
-}, 'Если у жилья 100 комнат, то в нём нельзя размещать гостей');
-
-//Проверка, больше ли гостей чем комнат
-pristine.addValidator(roomAmount, () => {
-  if((parseInt(roomAmount.value, 10) >= parseInt(guestAmount.value, 10))) {
-    return true;
-  }
-}, 'Количество гостей не может превышать количество комнат.');
-
-//Проверка, есть ли гости, если выбрано не 100 комнат
-pristine.addValidator(roomAmount, () => {
-  if(!(roomAmount.value !== '100' && guestAmount.value === '0')) {
-    return true;
-  }
-}, 'Необходим как минимум один гость.');
-
-
