@@ -1,5 +1,6 @@
 import {createOfferCard} from './render.js';
 import {createAdvertisement} from './data.js';
+import './validation.js';
 
 const advertisements = Array.from({length: 1}, createAdvertisement);
 
