@@ -1,3 +1,4 @@
+import './slider.js';
 import {setStateActive} from './states.js';
 import {createAdvertisement} from './data.js';
 
@@ -15,6 +16,8 @@ const offerCardTemplate = document.querySelector('#card').content;
 const map = L.map('map-canvas');
 L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+
+const testingAdvertisementsLayer = L.layerGroup().addTo(map);
 
 const mainPinIcon = L.icon({
   iconUrl: './img/main-pin.svg',
@@ -105,6 +108,20 @@ const createOfferCard = (advertisement) => {
   return offerCard;
 };
 
+const createAdvertisementPin = (advertisement) => {
+  const advertisementPin = L.marker(
+    advertisement.location,
+    regularPinSettings
+  );
+
+  advertisementPin.addTo(testingAdvertisementsLayer).bindPopup(createOfferCard(advertisement));
+
+  //По какой-то причине при повторном нажатии на балун попап был пустой, поэтому написал код ниже
+  advertisementPin.addEventListener('click', () => {
+    advertisementPin.setPopupContent(createOfferCard(advertisement));
+  });
+};
+
 //Инициализация карты
 map.on('load', onMapLoad).setView([35.6895, 139.69171], 13);
 
@@ -127,9 +144,5 @@ mainPin.on('moveend', (evt) => {
 const advertisements = Array.from({length: 10}, createAdvertisement);
 
 advertisements.forEach((advertisement) => {
-  const advertisementPin = L.marker(
-    advertisement.location,
-    regularPinSettings
-  );
-  advertisementPin.addTo(map);
+  createAdvertisementPin(advertisement);
 });
