@@ -1,4 +1,5 @@
 import {setStateActive} from './states.js';
+import {createAdvertisement} from './data.js';
 
 const addressField = document.querySelector('#address');
 
@@ -31,6 +32,16 @@ const regularPinIcon = L.icon({
   iconSize: [40, 40],
   iconAnchor: [20, 40],
 });
+
+const regularPinSettings = {
+  draggable: false,
+  icon: regularPinIcon,
+};
+
+const onMapLoad = () => {
+  setStateActive();
+  addressField.value = '35.6895, 139.69171';
+};
 
 const setOfferPhotos = (photos, photoSources) => {
   if (photoSources.length) {
@@ -94,22 +105,31 @@ const createOfferCard = (advertisement) => {
   return offerCard;
 };
 
-const onMapLoad = () => {
-  setStateActive();
-  addressField.value = '35.6895, 139.69171';
-};
-
+//Инициализация карты
 map.on('load', onMapLoad).setView([35.6895, 139.69171], 13);
 
+//Код для главной метки
 const mainPin = L.marker(
   {
     lat: 35.6895,
     lng: 139.69171,
   },
-  mainPinSettings);
+  mainPinSettings
+);
 
 mainPin.addTo(map);
 
 mainPin.on('moveend', (evt) => {
   addressField.value = `${evt.target.getLatLng().lat.toFixed(5)}, ${evt.target.getLatLng().lng.toFixed(5)}`;
+});
+
+//Код для меток объявлений
+const advertisements = Array.from({length: 10}, createAdvertisement);
+
+advertisements.forEach((advertisement) => {
+  const advertisementPin = L.marker(
+    advertisement.location,
+    regularPinSettings
+  );
+  advertisementPin.addTo(map);
 });
