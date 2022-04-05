@@ -1,3 +1,7 @@
+import {setStateActive} from './states.js';
+
+const addressField = document.querySelector('#address');
+
 const OFFER_TYPE = {
   palace: 'Дворец',
   flat: 'Квартира',
@@ -7,12 +11,17 @@ const OFFER_TYPE = {
 };
 
 const offerCardTemplate = document.querySelector('#card').content;
+const map = L.map('map-canvas');
+L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
 
+const mainPinIcon = L.icon({
+  iconUrl: './img/main-pin.svg',
+  iconSize: [52, 52],
+  iconAnchor: [26, 52],
+});
 
 const setOfferPhotos = (photos, photoSources) => {
-  // Можно было бы обойтись без этого условия, но сказано скрывать именно соответствующий блок,
-  // что, строго говоря, не подходит (без этого условия при передаче пустого массива будут скрыты дети блока, но не он сам).
-  // Надеюсь, правильно понял, что требовалось.
   if (photoSources.length) {
     photos.querySelector('.popup__photo').classList.add('hidden');
     for (let i = 0; i < photoSources.length; i++) {
@@ -27,7 +36,6 @@ const setOfferPhotos = (photos, photoSources) => {
 };
 
 const setOfferFeatures = (featureList, features) => {
-  // Аналогично setOfferPhotos
   if (features.length) {
     const featureElements = featureList.querySelectorAll('.popup__feature');
     const featureClasses = features.map((feature) => `popup__feature--${feature}`);
@@ -75,4 +83,26 @@ const createOfferCard = (advertisement) => {
   return offerCard;
 };
 
-export {createOfferCard};
+const onMapLoad = () => {
+  setStateActive();
+  addressField.value = '35.6895, 139.69171';
+};
+
+map.on('load', onMapLoad).setView([35.6895, 139.69171], 13);
+
+const mainPin = L.marker(
+  {
+    lat: 35.6895,
+    lng: 139.69171,
+  },
+  {
+    draggable: true,
+    icon: mainPinIcon,
+  },
+);
+
+mainPin.addTo(map);
+
+mainPin.on('moveend', (evt) => {
+  addressField.value = `${evt.target.getLatLng().lat.toFixed(5)}, ${evt.target.getLatLng().lng.toFixed(5)}`;
+});
