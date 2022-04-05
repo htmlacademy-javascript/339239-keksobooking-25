@@ -48,6 +48,8 @@ const setAccomodationPrices = (type) => {
   return accomodationMinimalPrices[type];
 };
 
+const validatePrice = (value) => value >= currentMinPrice && value <= MAX_PRICE;
+
 //Возвращаем соответствующее сообщение об ошибке в зависимости от выбора пользователя
 const getGuestAmountError = () => {
   if (roomsNumberField.value === '100') {
@@ -80,7 +82,8 @@ pristine.addValidator(
 pristine.addValidator(
   guestNumberField,
   validateGuests,
-  getGuestAmountError);
+  getGuestAmountError
+);
 
 //Валидация цены за ночь
 accomodationTypeField.addEventListener('change', () => {
@@ -91,7 +94,7 @@ accomodationTypeField.addEventListener('change', () => {
 
 pristine.addValidator(
   accomodationPriceField,
-  (value) => value >= currentMinPrice && value <= MAX_PRICE,
+  validatePrice,
   getAccomodationPriceError
 );
 
