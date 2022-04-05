@@ -21,6 +21,17 @@ const mainPinIcon = L.icon({
   iconAnchor: [26, 52],
 });
 
+const mainPinSettings = {
+  draggable: true,
+  icon: mainPinIcon,
+};
+
+const regularPinIcon = L.icon({
+  iconUrl: './img/main-pin.svg',
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
+});
+
 const setOfferPhotos = (photos, photoSources) => {
   if (photoSources.length) {
     photos.querySelector('.popup__photo').classList.add('hidden');
@@ -95,11 +106,7 @@ const mainPin = L.marker(
     lat: 35.6895,
     lng: 139.69171,
   },
-  {
-    draggable: true,
-    icon: mainPinIcon,
-  },
-);
+  mainPinSettings);
 
 mainPin.addTo(map);
 
