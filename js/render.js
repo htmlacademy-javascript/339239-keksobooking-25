@@ -1,3 +1,9 @@
+import './slider.js';
+import {setStateActive} from './states.js';
+import {createAdvertisement} from './data.js';
+
+const addressField = document.querySelector('#address');
+
 const OFFER_TYPE = {
   palace: 'Дворец',
   flat: 'Квартира',
@@ -7,12 +13,40 @@ const OFFER_TYPE = {
 };
 
 const offerCardTemplate = document.querySelector('#card').content;
+const map = L.map('map-canvas');
+L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
 
+const testingAdvertisementsLayer = L.layerGroup().addTo(map);
+
+const mainPinIcon = L.icon({
+  iconUrl: './img/main-pin.svg',
+  iconSize: [52, 52],
+  iconAnchor: [26, 52],
+});
+
+const mainPinSettings = {
+  draggable: true,
+  icon: mainPinIcon,
+};
+
+const regularPinIcon = L.icon({
+  iconUrl: './img/main-pin.svg',
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
+});
+
+const regularPinSettings = {
+  draggable: false,
+  icon: regularPinIcon,
+};
+
+const onMapLoad = () => {
+  setStateActive();
+  addressField.value = '35.6895, 139.69171';
+};
 
 const setOfferPhotos = (photos, photoSources) => {
-  // Можно было бы обойтись без этого условия, но сказано скрывать именно соответствующий блок,
-  // что, строго говоря, не подходит (без этого условия при передаче пустого массива будут скрыты дети блока, но не он сам).
-  // Надеюсь, правильно понял, что требовалось.
   if (photoSources.length) {
     photos.querySelector('.popup__photo').classList.add('hidden');
     for (let i = 0; i < photoSources.length; i++) {
@@ -27,7 +61,6 @@ const setOfferPhotos = (photos, photoSources) => {
 };
 
 const setOfferFeatures = (featureList, features) => {
-  // Аналогично setOfferPhotos
   if (features.length) {
     const featureElements = featureList.querySelectorAll('.popup__feature');
     const featureClasses = features.map((feature) => `popup__feature--${feature}`);
@@ -75,4 +108,41 @@ const createOfferCard = (advertisement) => {
   return offerCard;
 };
 
-export {createOfferCard};
+const createAdvertisementPin = (advertisement) => {
+  const advertisementPin = L.marker(
+    advertisement.location,
+    regularPinSettings
+  );
+
+  advertisementPin.addTo(testingAdvertisementsLayer).bindPopup(createOfferCard(advertisement));
+
+  //По какой-то причине при повторном нажатии на балун попап был пустой, поэтому написал код ниже
+  advertisementPin.addEventListener('click', () => {
+    advertisementPin.setPopupContent(createOfferCard(advertisement));
+  });
+};
+
+//Инициализация карты
+map.on('load', onMapLoad).setView([35.6895, 139.69171], 13);
+
+//Код для главной метки
+const mainPin = L.marker(
+  {
+    lat: 35.6895,
+    lng: 139.69171,
+  },
+  mainPinSettings
+);
+
+mainPin.addTo(map);
+
+mainPin.on('moveend', (evt) => {
+  addressField.value = `${evt.target.getLatLng().lat.toFixed(5)}, ${evt.target.getLatLng().lng.toFixed(5)}`;
+});
+
+//Код для меток объявлений
+const advertisements = Array.from({length: 10}, createAdvertisement);
+
+advertisements.forEach((advertisement) => {
+  createAdvertisementPin(advertisement);
+});

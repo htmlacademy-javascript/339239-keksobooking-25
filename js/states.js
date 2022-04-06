@@ -25,4 +25,6 @@ const setStateDisabled = () => {
   }
 };
 
-export {setStateActive, setStateDisabled};
+setStateDisabled();
+
+export {setStateActive};
