@@ -1,6 +1,28 @@
+const MAX_PRICE = 100000;
 const advertisementForm = document.querySelector('.ad-form');
 const guestNumberField = advertisementForm.querySelector('#capacity');
 const roomsNumberField = advertisementForm.querySelector('#room_number');
+const accomodationTypeField = advertisementForm.querySelector('#type');
+const accomodationPriceField = advertisementForm.querySelector('#price');
+const timeFieldset = advertisementForm.querySelector('.ad-form__element--time');
+const timeInField = timeFieldset.querySelector('#timein');
+const timeOutField = timeFieldset.querySelector('#timeout');
+
+const accomodationMinimalPrices = {
+  bungalow: 0,
+  flat: 1000,
+  hotel: 3000,
+  house: 5000,
+  palace: 10000,
+};
+
+const accomodationPlaceholderPrices = {
+  bungalow: 500,
+  flat: 5000,
+  hotel: 15000,
+  house: 25000,
+  palace: 50000,
+};
 
 const validationConfig = {
   classTo: 'ad-form__element',
@@ -14,11 +36,19 @@ const guestsForRoomsAmount = {
   '3': ['1', '2', '3'],
 };
 
+let currentMinPrice = accomodationMinimalPrices.flat;
+
 const pristine = new Pristine(advertisementForm, validationConfig);
 
 const validateTitle = (value) => value.length >= 30 && value.length <= 100;
 
-const validatePrice = (value) => value <= 100000;
+//Устанавливаем плейсхолдер и возвращаем минимальную цену жилья в зависимости от его типа
+const setAccomodationPrices = (type) => {
+  accomodationPriceField.placeholder = accomodationPlaceholderPrices[type];
+  return accomodationMinimalPrices[type];
+};
+
+const validatePrice = (value) => value >= currentMinPrice && value <= MAX_PRICE;
 
 //Возвращаем соответствующее сообщение об ошибке в зависимости от выбора пользователя
 const getGuestAmountError = () => {
@@ -28,6 +58,14 @@ const getGuestAmountError = () => {
     return 'Выберите количество гостей';
   }
   return 'Комнат не может быть меньше чем гостей';
+};
+
+const getAccomodationPriceError = () => {
+  if (accomodationPriceField.value < currentMinPrice) {
+    return `Минимальная цена для данного типа жилья составляет ${currentMinPrice} руб.`;
+  } else {
+    return `Цена не может быть выше ${MAX_PRICE} руб.`;
+  }
 };
 
 //Функция проверки количества гостей
@@ -44,13 +82,30 @@ pristine.addValidator(
 pristine.addValidator(
   guestNumberField,
   validateGuests,
-  getGuestAmountError);
+  getGuestAmountError
+);
 
 //Валидация цены за ночь
+accomodationTypeField.addEventListener('change', () => {
+  //Как только меняется значение поля тип жилья, меняется минимальная цена
+  currentMinPrice = setAccomodationPrices(accomodationTypeField.value);
+}
+);
+
 pristine.addValidator(
-  advertisementForm.querySelector('#price'),
+  accomodationPriceField,
   validatePrice,
-  'Цена не может быть выше 100000 руб.'
+  getAccomodationPriceError
+);
+
+//Синхронизация времени заезда/выезда
+timeFieldset.addEventListener('change', (evt) => {
+  if (evt.target === timeInField) {
+    timeOutField.value = timeInField.value;
+  } else {
+    timeInField.value = timeOutField.value;
+  }
+}
 );
 
 advertisementForm.addEventListener('submit', (evt) => {
