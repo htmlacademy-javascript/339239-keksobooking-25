@@ -1,5 +1,8 @@
+import {resetPage} from './render.js';
+
 const advertisementForm = document.querySelector('.ad-form');
 const mapFilters = document.querySelector('.map__filters');
+const resetButton = advertisementForm.querySelector('.ad-form__reset');
 
 const setStateActive = () => {
   advertisementForm.classList.remove('ad-form--disabled');
@@ -11,6 +14,11 @@ const setStateActive = () => {
   for (const formField of mapFilters.children) {
     formField.classList.remove('disabled');
   }
+
+  resetButton.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    resetPage();
+  });
 };
 
 const setStateDisabled = () => {

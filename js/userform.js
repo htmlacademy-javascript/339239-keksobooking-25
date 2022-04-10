@@ -1,3 +1,7 @@
+import {sendUserAdvertisement} from './data-fetch.js';
+import {resetPage} from './render.js';
+import {showSuccessMessage, showErrorMessage} from './status-messages.js';
+
 const MAX_PRICE = 100000;
 const advertisementForm = document.querySelector('.ad-form');
 const guestNumberField = advertisementForm.querySelector('#capacity');
@@ -71,6 +75,12 @@ const getAccomodationPriceError = () => {
 //Функция проверки количества гостей
 const validateGuests = (value) => guestsForRoomsAmount[roomsNumberField.value].includes(value);
 
+//При успешной отправке формы
+const onFormSendSuccess = () => {
+  showSuccessMessage();
+  resetPage();
+};
+
 //Валидация заголовка
 pristine.addValidator(
   advertisementForm.querySelector('#title'),
@@ -109,8 +119,10 @@ timeFieldset.addEventListener('change', (evt) => {
 );
 
 advertisementForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
   const isValid = pristine.validate();
-  if (!isValid) {
-    evt.preventDefault();
+
+  if (isValid) {
+    sendUserAdvertisement(onFormSendSuccess, showErrorMessage, new FormData(evt.target));
   }
 });

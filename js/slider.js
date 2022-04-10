@@ -1,6 +1,12 @@
 const priceField = document.querySelector('#price');
 const priceSlider = document.querySelector('.ad-form__slider');
 
+const resetSlider = () => {
+  priceSlider.noUiSlider.updateOptions({
+    start: 0
+  });
+};
+
 noUiSlider.create(priceSlider, {
   range: {
     min: 0,
@@ -22,3 +28,11 @@ noUiSlider.create(priceSlider, {
 priceSlider.noUiSlider.on('update', () => {
   priceField.value = priceSlider.noUiSlider.get();
 });
+
+priceField.addEventListener('change', () => {
+  priceSlider.noUiSlider.updateOptions({
+    start: priceField.value
+  });
+});
+
+export {resetSlider};
