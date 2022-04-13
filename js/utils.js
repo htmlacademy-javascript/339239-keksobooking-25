@@ -102,4 +102,6 @@ const showErrorPopup = (message) => {
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
-export {getRandomInteger, getRandomFloatingPoint, getRandomArrayElement, createOfferCard, showErrorPopup, isEscapeKey};
+const removeArrayElement = (array, valueToRemove) => array.filter((element) => valueToRemove !== element);
+
+export {getRandomInteger, getRandomFloatingPoint, getRandomArrayElement, createOfferCard, showErrorPopup, isEscapeKey, removeArrayElement};

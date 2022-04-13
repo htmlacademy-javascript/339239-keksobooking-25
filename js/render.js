@@ -2,7 +2,9 @@ import './slider.js';
 import {resetSlider} from './slider.js';
 import {setStateActive} from './states.js';
 import {getAdvertisements} from './data-fetch.js';
-import {createOfferCard, showErrorPopup} from './utils.js';
+import {createOfferCard, showErrorPopup, removeArrayElement} from './utils.js';
+
+const MAX_ADVERTISEMENTS_RENDERED = 10;
 
 const successMessage = document.querySelector('#success').content.cloneNode(true);
 const errorMessage = document.querySelector('#error').content.cloneNode(true);
@@ -89,8 +91,38 @@ mainPin.on('moveend', (evt) => {
 //Код для меток объявлений
 
 getAdvertisements((advertisements) => {
-  advertisements.forEach((advertisement) => {
-    createAdvertisementPin(advertisement);
+  //1. Получили данные функцией getAdvertisements +
+  //2. Повесили обработчик, который отслеживает изменения фильтров +
+  //3. При каждом изменении фильтра отправляем копию изначального массива на фильтрацию (не забыть про дребезг)
+  //4. Очищаем текущие метки, отрисовываем те, что получились после фильтрации
+  const advertisementsToFilter = advertisements.slice();
+  let features = [];
+  filterForm.addEventListener('change', (evt) => {
+    //Если целью evt был чекбокс, то:
+    //1. Если он не checked, дать ему checked, записать значение в массив features
+    //2. Иначе убрать checked, убрать значение из массива features
+    if (evt.target.classList.contains('map__checkbox')) {
+      if (!evt.target.classList.contains('checked')) {
+        evt.target.classList.add('checked');
+        features.push(evt.target.value);
+      } else {
+        evt.target.classList.remove('checked');
+        features = removeArrayElement(features, evt.target.value);
+      }
+    }
+    const filterSettings = {
+      type: filterForm.querySelector('#housing-type').value,
+      price: filterForm.querySelector('#housing-price').value,
+      rooms: filterForm.querySelector('#housing-rooms').value,
+      guests: filterForm.querySelector('#housing-guests').value,
+      features: features,
+    };
+    console.log(filterSettings);
+
+    const advertisementsToRender = advertisementsToFilter.slice(0, MAX_ADVERTISEMENTS_RENDERED);
+    advertisementsToRender.forEach((advertisement) => {
+      createAdvertisementPin(advertisement);
+    });
   });
 },
 showErrorPopup);
