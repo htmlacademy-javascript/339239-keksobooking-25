@@ -3,6 +3,7 @@ import {resetSlider} from './slider.js';
 import {setStateActive} from './states.js';
 import {getAdvertisements} from './data-fetch.js';
 import {createOfferCard, showErrorPopup, removeArrayElement} from './utils.js';
+import {getFilteredArray} from './filtering.js';
 
 const MAX_ADVERTISEMENTS_RENDERED = 10;
 
@@ -17,7 +18,7 @@ const map = L.map('map-canvas');
 L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
 
-const testingAdvertisementsLayer = L.layerGroup().addTo(map);
+const advertisementsLayer = L.layerGroup().addTo(map);
 
 const mainPinIcon = L.icon({
   iconUrl: './img/main-pin.svg',
@@ -70,7 +71,7 @@ const createAdvertisementPin = (advertisement) => {
     regularPinSettings
   );
 
-  advertisementPin.addTo(testingAdvertisementsLayer).bindPopup(createOfferCard(advertisement));
+  advertisementPin.addTo(advertisementsLayer).bindPopup(createOfferCard(advertisement));
 
   //По какой-то причине при повторном нажатии на балун попап был пустой, поэтому написал код ниже
   advertisementPin.addEventListener('click', () => {
@@ -89,18 +90,16 @@ mainPin.on('moveend', (evt) => {
 });
 
 //Код для меток объявлений
-
 getAdvertisements((advertisements) => {
-  //1. Получили данные функцией getAdvertisements +
-  //2. Повесили обработчик, который отслеживает изменения фильтров +
-  //3. При каждом изменении фильтра отправляем копию изначального массива на фильтрацию (не забыть про дребезг)
-  //4. Очищаем текущие метки, отрисовываем те, что получились после фильтрации
+  advertisements.slice(0, MAX_ADVERTISEMENTS_RENDERED).forEach((advertisement) => {
+    createAdvertisementPin(advertisement);
+  });
   const advertisementsToFilter = advertisements.slice();
   let features = [];
   filterForm.addEventListener('change', (evt) => {
-    //Если целью evt был чекбокс, то:
-    //1. Если он не checked, дать ему checked, записать значение в массив features
-    //2. Иначе убрать checked, убрать значение из массива features
+
+    advertisementsLayer.clearLayers();
+
     if (evt.target.classList.contains('map__checkbox')) {
       if (!evt.target.classList.contains('checked')) {
         evt.target.classList.add('checked');
@@ -117,9 +116,9 @@ getAdvertisements((advertisements) => {
       guests: filterForm.querySelector('#housing-guests').value,
       features: features,
     };
-    console.log(filterSettings);
 
-    const advertisementsToRender = advertisementsToFilter.slice(0, MAX_ADVERTISEMENTS_RENDERED);
+    const advertisementsToRender = getFilteredArray(advertisementsToFilter, filterSettings).slice(0, MAX_ADVERTISEMENTS_RENDERED);
+
     advertisementsToRender.forEach((advertisement) => {
       createAdvertisementPin(advertisement);
     });
