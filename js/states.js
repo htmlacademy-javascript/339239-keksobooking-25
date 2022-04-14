@@ -33,6 +33,13 @@ const setStateDisabled = () => {
   }
 };
 
+const setFiltersDisabled = () => {
+  mapFilters.classList.add('map__filters--disabled');
+  for (const formField of mapFilters.children) {
+    formField.classList.add('disabled');
+  }
+};
+
 setStateDisabled();
 
-export {setStateActive};
+export {setStateActive, setFiltersDisabled};

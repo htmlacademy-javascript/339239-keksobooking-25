@@ -1,8 +1,8 @@
 import './slider.js';
 import {resetSlider} from './slider.js';
-import {setStateActive} from './states.js';
+import {setStateActive, setFiltersDisabled} from './states.js';
 import {getAdvertisements} from './data-fetch.js';
-import {createOfferCard, showErrorPopup, removeArrayElement} from './utils.js';
+import {createOfferCard, showErrorPopup, removeArrayElement, debounce} from './utils.js';
 import {getFilteredArray} from './filtering.js';
 
 const MAX_ADVERTISEMENTS_RENDERED = 10;
@@ -56,6 +56,11 @@ const resetPage = () => {
   map.closePopup().setView(initialLocation, 13);
 };
 
+const onAdvertisementLoadFailure = () => {
+  setFiltersDisabled();
+  showErrorPopup('Не удалось получить данные о существующих объявлениях. Попробуйте перезагрузить страницу.');
+};
+
 const onMapLoad = () => {
   setStateActive();
   successMessage.querySelector('.success').classList.add('hidden');
@@ -96,9 +101,8 @@ getAdvertisements((advertisements) => {
   });
   const advertisementsToFilter = advertisements.slice();
   let features = [];
-  filterForm.addEventListener('change', (evt) => {
 
-    advertisementsLayer.clearLayers();
+  filterForm.addEventListener('change', (evt) => {
 
     if (evt.target.classList.contains('map__checkbox')) {
       if (!evt.target.classList.contains('checked')) {
@@ -119,11 +123,14 @@ getAdvertisements((advertisements) => {
 
     const advertisementsToRender = getFilteredArray(advertisementsToFilter, filterSettings).slice(0, MAX_ADVERTISEMENTS_RENDERED);
 
+    debounce(_, 100);
+
+    advertisementsLayer.clearLayers();
     advertisementsToRender.forEach((advertisement) => {
       createAdvertisementPin(advertisement);
     });
   });
 },
-showErrorPopup);
+onAdvertisementLoadFailure);
 
 export {resetPage};
