@@ -102,8 +102,7 @@ getAdvertisements((advertisements) => {
   const advertisementsToFilter = advertisements.slice();
   let features = [];
 
-  filterForm.addEventListener('change', (evt) => {
-
+  const filtering = (evt) => {
     if (evt.target.classList.contains('map__checkbox')) {
       if (!evt.target.classList.contains('checked')) {
         evt.target.classList.add('checked');
@@ -122,14 +121,14 @@ getAdvertisements((advertisements) => {
     };
 
     const advertisementsToRender = getFilteredArray(advertisementsToFilter, filterSettings).slice(0, MAX_ADVERTISEMENTS_RENDERED);
-
-    debounce(_, 100);
-
     advertisementsLayer.clearLayers();
     advertisementsToRender.forEach((advertisement) => {
       createAdvertisementPin(advertisement);
     });
-  });
+  };
+
+  const debouncedFiltering = debounce(filtering, 500);
+  filterForm.addEventListener('change', debouncedFiltering);
 },
 onAdvertisementLoadFailure);
 
