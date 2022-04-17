@@ -4,8 +4,13 @@ import {resetSlider} from './slider.js';
 import {resetMap} from './render.js';
 
 const MAX_PRICE = 100000;
+const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 const advertisementForm = document.querySelector('.ad-form');
 const filterForm = document.querySelector('.map__filters');
+const avatarUploadField = advertisementForm.querySelector('#avatar');
+const avatarPreview = advertisementForm.querySelector('.ad-form-header__preview').firstElementChild;
+const imagesUploadField = advertisementForm.querySelector('#images');
+const imagesPreview = advertisementForm.querySelector('.ad-form__photo');
 const guestNumberField = advertisementForm.querySelector('#capacity');
 const roomsNumberField = advertisementForm.querySelector('#room_number');
 const accomodationTypeField = advertisementForm.querySelector('#type');
@@ -129,6 +134,32 @@ const setForm = () => {
     }
   }
   );
+  avatarUploadField.addEventListener('change', () => {
+    const file = avatarUploadField.files[0];
+    const fileName = file.name.toLowerCase();
+
+    const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+    if (matches) {
+      avatarPreview.src = URL.createObjectURL(file);
+    }
+  });
+
+  imagesUploadField.addEventListener('change', () => {
+    const file = imagesUploadField.files[0];
+    const fileName = file.name.toLowerCase();
+
+    const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+    if (matches && !(imagesPreview.children.length)) {
+      const image = document.createElement('img');
+      image.setAttribute('width', '70');
+      image.setAttribute('height', '70');
+      image.setAttribute('alt', 'Фотография жилья');
+      image.setAttribute('src', URL.createObjectURL(file));
+      imagesPreview.appendChild(image);
+    } else {
+      imagesPreview.firstElementChild.src = URL.createObjectURL(file);
+    }
+  });
 
   advertisementForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
