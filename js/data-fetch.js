@@ -8,9 +8,9 @@ const sendUserAdvertisement = (onSuccess, onFail, body) => fetch('https://25.jav
     method: 'POST',
     body,
     //Почему-то из-за кода ниже сервер отдаёт пятисотку, поэтому пока оставил стандартный тип
-    // headers: {
-    //   'Content-Type': 'multipart/form-data'
-    // }
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
   .then((response) => {
     if(response.ok) {
