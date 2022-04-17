@@ -1,14 +1,20 @@
-const filterByType = (settings) => (ad) => {
-  if (settings.type !== 'any'){
-    return ad.offer.type === settings.type;
+import {removeArrayElement} from './utils.js';
+import {createAdvertisementPin} from './pins.js';
+
+const filterForm = document.querySelector('.map__filters');
+const MAX_ADVERTISEMENTS_RENDERED = 10;
+
+const filterByType = (type) => (ad) => {
+  if (type !== 'any'){
+    return ad.offer.type === type;
   }
   return true;
 };
 
-const filterByPrice = (settings) => (ad) =>
+const filterByPrice = (price) => (ad) =>
 {
-  if (settings.price !== 'any'){
-    switch (settings.price) {
+  if (price !== 'any'){
+    switch (price) {
       case 'low':
         return ad.offer.price < 10000;
       case 'middle':
@@ -20,28 +26,28 @@ const filterByPrice = (settings) => (ad) =>
   return true;
 };
 
-const filterByRooms = (settings) => (ad) =>
+const filterByRooms = (rooms) => (ad) =>
 {
-  if (settings.rooms !== 'any'){
-    return ad.offer.rooms.toString() === settings.rooms;
+  if (rooms !== 'any'){
+    return ad.offer.rooms.toString() === rooms;
   }
   return true;
 };
 
-const filterByGuests = (settings) => (ad) =>
+const filterByGuests = (guests) => (ad) =>
 {
-  if (settings.guests !== 'any'){
-    return ad.offer.guests.toString() === settings.guests;
+  if (guests !== 'any'){
+    return ad.offer.guests.toString() === guests;
   }
   return true;
 };
 
-const filterByFeatures = (settings) => (ad) =>
+const filterByFeatures = (features) => (ad) =>
 {
-  if (settings.features.length){
+  if (features.length){
     if (ad.offer.features) {
-      for (let i = 0; i < settings.features.length; i++) {
-        if(!ad.offer.features.includes(settings.features[i])) {
+      for (let i = 0; i < features.length; i++) {
+        if(!ad.offer.features.includes(features[i])) {
           return false;
         }
       }
@@ -52,16 +58,46 @@ const filterByFeatures = (settings) => (ad) =>
   return true;
 };
 
-const getFilteredArray = (features, filterSettings) => {
-  let filteredArray = features.slice();
+const getFilteredArray = (advertisementsToFilter, features) => {
+  let filteredArray = advertisementsToFilter;
+  const filterType = filterForm.querySelector('#housing-type').value;
+  const filterPrice = filterForm.querySelector('#housing-price').value;
+  const filterRooms = filterForm.querySelector('#housing-rooms').value;
+  const filterGuests = filterForm.querySelector('#housing-guests').value;
+
   filteredArray = filteredArray
-    .filter(filterByType(filterSettings))
-    .filter(filterByPrice(filterSettings))
-    .filter(filterByRooms(filterSettings))
-    .filter(filterByGuests(filterSettings))
-    .filter(filterByFeatures(filterSettings));
+    .filter(filterByType(filterType))
+    .filter(filterByPrice(filterPrice))
+    .filter(filterByRooms(filterRooms))
+    .filter(filterByGuests(filterGuests))
+    .filter(filterByFeatures(features));
 
   return filteredArray;
 };
 
-export {getFilteredArray};
+const filtering = (advertisements, advertisementsLayer) => {
+  const advertisementsToFilter = advertisements.slice();
+  let features = [];
+  // debugger;
+  const setFilteredPins = (evt) => {
+    if (evt.target.classList.contains('map__checkbox')) {
+      if (!evt.target.classList.contains('checked')) {
+        evt.target.classList.add('checked');
+        features.push(evt.target.value);
+      } else {
+        evt.target.classList.remove('checked');
+        features = removeArrayElement(features, evt.target.value);
+      }
+    }
+
+    const advertisementsToRender = getFilteredArray(advertisementsToFilter, features).slice(0, MAX_ADVERTISEMENTS_RENDERED);
+    advertisementsLayer.clearLayers();
+    advertisementsToRender.forEach((advertisement) => {
+      createAdvertisementPin(advertisement, advertisementsLayer);
+    });
+  };
+
+  return setFilteredPins;
+};
+
+export {filtering};

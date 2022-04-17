@@ -1,9 +1,11 @@
 import {sendUserAdvertisement} from './data-fetch.js';
-import {resetPage} from './render.js';
 import {showSuccessMessage, showErrorMessage} from './status-messages.js';
+import {resetSlider} from './slider.js';
+import {resetMap} from './render.js';
 
 const MAX_PRICE = 100000;
 const advertisementForm = document.querySelector('.ad-form');
+const filterForm = document.querySelector('.map__filters');
 const guestNumberField = advertisementForm.querySelector('#capacity');
 const roomsNumberField = advertisementForm.querySelector('#room_number');
 const accomodationTypeField = advertisementForm.querySelector('#type');
@@ -75,54 +77,67 @@ const getAccomodationPriceError = () => {
 //Функция проверки количества гостей
 const validateGuests = (value) => guestsForRoomsAmount[roomsNumberField.value].includes(value);
 
+const resetForm = () => {
+  advertisementForm.reset();
+  filterForm.reset();
+  resetSlider();
+};
+
 //При успешной отправке формы
 const onFormSendSuccess = () => {
   showSuccessMessage();
-  resetPage();
+  resetForm();
+  resetMap();
 };
 
-//Валидация заголовка
-pristine.addValidator(
-  advertisementForm.querySelector('#title'),
-  validateTitle,
-  'Длина заголовка должна быть от 30 до 100 символов'
-);
+const setValidators = () => {
+  //Валидация заголовка
+  pristine.addValidator(
+    advertisementForm.querySelector('#title'),
+    validateTitle,
+    'Длина заголовка должна быть от 30 до 100 символов'
+  );
 
-//Валидация количества комнат и гостей
-pristine.addValidator(
-  guestNumberField,
-  validateGuests,
-  getGuestAmountError
-);
+  pristine.addValidator(
+    accomodationPriceField,
+    validatePrice,
+    getAccomodationPriceError
+  );
 
-//Валидация цены за ночь
-accomodationTypeField.addEventListener('change', () => {
-  //Как только меняется значение поля тип жилья, меняется минимальная цена
-  currentMinPrice = setAccomodationPrices(accomodationTypeField.value);
-}
-);
+  //Валидация количества комнат и гостей
+  pristine.addValidator(
+    guestNumberField,
+    validateGuests,
+    getGuestAmountError
+  );
+};
 
-pristine.addValidator(
-  accomodationPriceField,
-  validatePrice,
-  getAccomodationPriceError
-);
-
-//Синхронизация времени заезда/выезда
-timeFieldset.addEventListener('change', (evt) => {
-  if (evt.target === timeInField) {
-    timeOutField.value = timeInField.value;
-  } else {
-    timeInField.value = timeOutField.value;
+const setForm = () => {
+  //Валидация цены за ночь
+  accomodationTypeField.addEventListener('change', () => {
+    //Как только меняется значение поля тип жилья, меняется минимальная цена
+    currentMinPrice = setAccomodationPrices(accomodationTypeField.value);
   }
-}
-);
+  );
 
-advertisementForm.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-  const isValid = pristine.validate();
-
-  if (isValid) {
-    sendUserAdvertisement(onFormSendSuccess, showErrorMessage, new FormData(evt.target));
+  //Синхронизация времени заезда/выезда
+  timeFieldset.addEventListener('change', (evt) => {
+    if (evt.target === timeInField) {
+      timeOutField.value = timeInField.value;
+    } else {
+      timeInField.value = timeOutField.value;
+    }
   }
-});
+  );
+
+  advertisementForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    const isValid = pristine.validate();
+
+    if (isValid) {
+      sendUserAdvertisement(onFormSendSuccess, showErrorMessage, new FormData(evt.target));
+    }
+  });
+};
+
+export {setForm, setValidators, resetForm};
