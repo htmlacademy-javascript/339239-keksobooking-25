@@ -102,4 +102,15 @@ const showErrorPopup = (message) => {
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
-export {getRandomInteger, getRandomFloatingPoint, getRandomArrayElement, createOfferCard, showErrorPopup, isEscapeKey};
+const removeArrayElement = (array, valueToRemove) => array.filter((element) => valueToRemove !== element);
+
+function debounce (callback, timeoutDelay = 500) {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+}
+
+export {getRandomInteger, getRandomFloatingPoint, getRandomArrayElement, createOfferCard, showErrorPopup, isEscapeKey, removeArrayElement, debounce};

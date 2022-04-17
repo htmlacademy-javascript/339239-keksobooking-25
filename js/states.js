@@ -1,4 +1,5 @@
-import {resetPage} from './render.js';
+import {resetMap} from './render.js';
+import {resetForm} from './userform.js';
 
 const advertisementForm = document.querySelector('.ad-form');
 const mapFilters = document.querySelector('.map__filters');
@@ -17,7 +18,8 @@ const setStateActive = () => {
 
   resetButton.addEventListener('click', (evt) => {
     evt.preventDefault();
-    resetPage();
+    resetMap();
+    resetForm();
   });
 };
 
@@ -33,6 +35,11 @@ const setStateDisabled = () => {
   }
 };
 
-setStateDisabled();
+const setFiltersDisabled = () => {
+  mapFilters.classList.add('map__filters--disabled');
+  for (const formField of mapFilters.children) {
+    formField.classList.add('disabled');
+  }
+};
 
-export {setStateActive};
+export {setStateActive, setFiltersDisabled, setStateDisabled};

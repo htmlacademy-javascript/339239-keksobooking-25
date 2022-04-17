@@ -1,3 +1,6 @@
-import './render.js';
-import './userform.js';
-import './status-messages.js';
+import {setMap} from './render.js';
+import {setForm, setValidators} from './userform.js';
+
+setMap();
+setForm();
+setValidators();
