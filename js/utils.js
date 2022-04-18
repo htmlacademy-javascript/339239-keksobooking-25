@@ -8,29 +8,6 @@ const OFFER_TYPE = {
 
 const offerCardTemplate = document.querySelector('#card').content;
 
-const getRandomInteger = (smallestValue, greatestValue) => {
-  // Проверки валидности аргументов
-  if (smallestValue >= 0 && greatestValue > 0) {
-    if (smallestValue <= greatestValue) {
-      return Math.round(smallestValue + Math.random() * (greatestValue - smallestValue));
-    }
-  }
-};
-
-const getRandomFloatingPoint = (smallestValue, greatestValue, resultPrecision) => {
-  // Конвертируем переданную точность в формат для вычислений
-  resultPrecision = 10**resultPrecision;
-
-  // Проверки валидности аргументов
-  if (smallestValue >= 0 && greatestValue > 0) {
-    if (smallestValue <= greatestValue) {
-      return Math.round((smallestValue + Math.random() * (greatestValue - smallestValue)) * resultPrecision) / resultPrecision;
-    }
-  }
-};
-
-const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length-1)];
-
 const setOfferPhotos = (photos, photoSources) => {
   if (photoSources) {
     photos.querySelector('.popup__photo').classList.add('hidden');
@@ -113,4 +90,4 @@ function debounce (callback, timeoutDelay = 500) {
   };
 }
 
-export {getRandomInteger, getRandomFloatingPoint, getRandomArrayElement, createOfferCard, showErrorPopup, isEscapeKey, removeArrayElement, debounce};
+export {createOfferCard, showErrorPopup, isEscapeKey, removeArrayElement, debounce};

@@ -5,7 +5,6 @@ import {showErrorPopup, debounce} from './utils.js';
 import {filtering} from './filtering.js';
 import {createAdvertisementPin, getMainPin} from './pins.js';
 
-setStateDisabled();
 const MAX_ADVERTISEMENTS_RENDERED = 10;
 
 const successMessage = document.querySelector('#success').content.cloneNode(true);
@@ -18,6 +17,8 @@ const mainPin = getMainPin();
 const map = L.map('map-canvas');
 L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+
+setStateDisabled();
 
 const advertisementsLayer = L.layerGroup().addTo(map);
 
