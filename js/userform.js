@@ -151,10 +151,10 @@ const setForm = () => {
     const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
     if (matches && !(imagesPreview.children.length)) {
       const image = document.createElement('img');
-      image.setAttribute('width', '70');
-      image.setAttribute('height', '70');
-      image.setAttribute('alt', 'Фотография жилья');
-      image.setAttribute('src', URL.createObjectURL(file));
+      image.width = '70';
+      image.height= '70';
+      image.alt = 'Фотография жилья';
+      image.src = URL.createObjectURL(file);
       imagesPreview.appendChild(image);
     } else {
       imagesPreview.firstElementChild.src = URL.createObjectURL(file);
