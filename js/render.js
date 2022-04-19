@@ -6,6 +6,7 @@ import {filtering} from './filtering.js';
 import {createAdvertisementPin, getMainPin} from './pins.js';
 
 const MAX_ADVERTISEMENTS_RENDERED = 10;
+const INITIAL_ZOOM = 13;
 
 const successMessage = document.querySelector('#success').content.cloneNode(true);
 const errorMessage = document.querySelector('#error').content.cloneNode(true);
@@ -25,7 +26,7 @@ const advertisementsLayer = L.layerGroup().addTo(map);
 const resetMap = () => {
   mainPin.setLatLng(initialLocation);
   addressField.value = initialLocation.toString(', ');
-  map.closePopup().setView(initialLocation, 13);
+  map.closePopup().setView(initialLocation, INITIAL_ZOOM);
 };
 
 const onMapLoad = () => {
@@ -57,7 +58,7 @@ const onAdLoadSuccess = (advertisements) => {
 
 const setMap = () => {
   //Инициализация карты
-  map.on('load', onMapLoad).setView(initialLocation, 13);
+  map.on('load', onMapLoad).setView(initialLocation, INITIAL_ZOOM);
 
   //Код для главной метки
   mainPin.addTo(map);

@@ -4,6 +4,8 @@ import {resetSlider} from './slider.js';
 import {resetMap} from './render.js';
 
 const MAX_PRICE = 100000;
+const MIN_TITLE_LENGTH = 30;
+const MAX_TITLE_LENGTH = 100;
 const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 const advertisementForm = document.querySelector('.ad-form');
 const filterForm = document.querySelector('.map__filters');
@@ -51,7 +53,7 @@ let currentMinPrice = accomodationMinimalPrices.flat;
 
 const pristine = new Pristine(advertisementForm, validationConfig);
 
-const validateTitle = (value) => value.length >= 30 && value.length <= 100;
+const validateTitle = (value) => value.length >= MIN_TITLE_LENGTH && value.length <= MAX_TITLE_LENGTH;
 
 //Устанавливаем плейсхолдер и возвращаем минимальную цену жилья в зависимости от его типа
 const setAccomodationPrices = (type) => {
