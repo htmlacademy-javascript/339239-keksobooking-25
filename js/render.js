@@ -23,12 +23,6 @@ setStateDisabled();
 
 const advertisementsLayer = L.layerGroup().addTo(map);
 
-const resetMap = () => {
-  mainPin.setLatLng(initialLocation);
-  addressField.value = initialLocation.toString(', ');
-  map.closePopup().setView(initialLocation, INITIAL_ZOOM);
-};
-
 const onMapLoad = () => {
   setStateActive();
   successMessage.querySelector('.success').classList.add('hidden');
@@ -54,6 +48,18 @@ const onAdLoadSuccess = (advertisements) => {
 
   const debouncedFiltering = debounce(filtering(advertisements, advertisementsLayer), 500);
   filterForm.addEventListener('change', debouncedFiltering);
+};
+
+const onAdReloadSuccess = (advertisements) => {
+  advertisementsLayer.clearLayers();
+  renderInitialAds(advertisements);
+};
+
+const resetMap = () => {
+  mainPin.setLatLng(initialLocation);
+  addressField.value = initialLocation.toString(', ');
+  map.closePopup().setView(initialLocation, INITIAL_ZOOM);
+  getAdvertisements(onAdReloadSuccess, onAdLoadFailure);
 };
 
 const setMap = () => {
