@@ -57,7 +57,6 @@ const onAdReloadSuccess = (advertisements) => {
 
 const resetMap = () => {
   mainPin.setLatLng(initialLocation);
-  addressField.value = initialLocation.toString(', ');
   map.closePopup().setView(initialLocation, INITIAL_ZOOM);
   getAdvertisements(onAdReloadSuccess, onAdLoadFailure);
 };

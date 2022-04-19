@@ -7,6 +7,8 @@ const MAX_PRICE = 100000;
 const MIN_TITLE_LENGTH = 30;
 const MAX_TITLE_LENGTH = 100;
 const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+const initialLocation = [35.6895, 139.69171];
+const addressField = document.querySelector('#address');
 const advertisementForm = document.querySelector('.ad-form');
 const filterForm = document.querySelector('.map__filters');
 const avatarUploadField = advertisementForm.querySelector('#avatar');
@@ -87,6 +89,7 @@ const validateGuests = (value) => guestsForRoomsAmount[roomsNumberField.value].i
 const resetForm = () => {
   advertisementForm.reset();
   filterForm.reset();
+  addressField.value = initialLocation.toString(', ');
   resetSlider();
 };
 
