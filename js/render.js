@@ -5,8 +5,8 @@ import {showErrorPopup, debounce} from './utils.js';
 import {filtering} from './filtering.js';
 import {createAdvertisementPin, getMainPin} from './pins.js';
 
-setStateDisabled();
 const MAX_ADVERTISEMENTS_RENDERED = 10;
+const INITIAL_ZOOM = 13;
 
 const successMessage = document.querySelector('#success').content.cloneNode(true);
 const errorMessage = document.querySelector('#error').content.cloneNode(true);
@@ -19,13 +19,9 @@ const map = L.map('map-canvas');
 L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
 
-const advertisementsLayer = L.layerGroup().addTo(map);
+setStateDisabled();
 
-const resetMap = () => {
-  mainPin.setLatLng(initialLocation);
-  addressField.value = initialLocation.toString(', ');
-  map.closePopup().setView(initialLocation, 13);
-};
+const advertisementsLayer = L.layerGroup().addTo(map);
 
 const onMapLoad = () => {
   setStateActive();
@@ -54,9 +50,20 @@ const onAdLoadSuccess = (advertisements) => {
   filterForm.addEventListener('change', debouncedFiltering);
 };
 
+const onAdReloadSuccess = (advertisements) => {
+  advertisementsLayer.clearLayers();
+  renderInitialAds(advertisements);
+};
+
+const resetMap = () => {
+  mainPin.setLatLng(initialLocation);
+  map.closePopup().setView(initialLocation, INITIAL_ZOOM);
+  getAdvertisements(onAdReloadSuccess, onAdLoadFailure);
+};
+
 const setMap = () => {
   //Инициализация карты
-  map.on('load', onMapLoad).setView(initialLocation, 13);
+  map.on('load', onMapLoad).setView(initialLocation, INITIAL_ZOOM);
 
   //Код для главной метки
   mainPin.addTo(map);

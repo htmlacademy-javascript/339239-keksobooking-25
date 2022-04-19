@@ -1,8 +1,12 @@
 import {removeArrayElement} from './utils.js';
 import {createAdvertisementPin} from './pins.js';
 
-const filterForm = document.querySelector('.map__filters');
 const MAX_ADVERTISEMENTS_RENDERED = 10;
+const MAX_LOW_PRICE = 10000;
+const MAX_MIDDLE_PRICE = 50000;
+
+
+const filterForm = document.querySelector('.map__filters');
 
 const filterByType = (type) => (ad) => {
   if (type !== 'any'){
@@ -16,11 +20,11 @@ const filterByPrice = (price) => (ad) =>
   if (price !== 'any'){
     switch (price) {
       case 'low':
-        return ad.offer.price < 10000;
+        return ad.offer.price < MAX_LOW_PRICE;
       case 'middle':
-        return ad.offer.price >= 10000 && ad.offer.price < 50000;
+        return ad.offer.price >= MAX_LOW_PRICE && ad.offer.price < MAX_MIDDLE_PRICE;
       case 'high':
-        return ad.offer.price >= 50000;
+        return ad.offer.price >= MAX_MIDDLE_PRICE;
     }
   }
   return true;
@@ -78,7 +82,6 @@ const getFilteredArray = (advertisementsToFilter, features) => {
 const filtering = (advertisements, advertisementsLayer) => {
   const advertisementsToFilter = advertisements.slice();
   let features = [];
-  // debugger;
   const setFilteredPins = (evt) => {
     if (evt.target.classList.contains('map__checkbox')) {
       if (!evt.target.classList.contains('checked')) {

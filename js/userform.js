@@ -4,7 +4,11 @@ import {resetSlider} from './slider.js';
 import {resetMap} from './render.js';
 
 const MAX_PRICE = 100000;
+const MIN_TITLE_LENGTH = 30;
+const MAX_TITLE_LENGTH = 100;
 const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+const initialLocation = [35.6895, 139.69171];
+const addressField = document.querySelector('#address');
 const advertisementForm = document.querySelector('.ad-form');
 const filterForm = document.querySelector('.map__filters');
 const avatarUploadField = advertisementForm.querySelector('#avatar');
@@ -51,7 +55,7 @@ let currentMinPrice = accomodationMinimalPrices.flat;
 
 const pristine = new Pristine(advertisementForm, validationConfig);
 
-const validateTitle = (value) => value.length >= 30 && value.length <= 100;
+const validateTitle = (value) => value.length >= MIN_TITLE_LENGTH && value.length <= MAX_TITLE_LENGTH;
 
 //Устанавливаем плейсхолдер и возвращаем минимальную цену жилья в зависимости от его типа
 const setAccomodationPrices = (type) => {
@@ -85,6 +89,7 @@ const validateGuests = (value) => guestsForRoomsAmount[roomsNumberField.value].i
 const resetForm = () => {
   advertisementForm.reset();
   filterForm.reset();
+  addressField.value = initialLocation.toString(', ');
   resetSlider();
 };
 
@@ -151,10 +156,10 @@ const setForm = () => {
     const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
     if (matches && !(imagesPreview.children.length)) {
       const image = document.createElement('img');
-      image.setAttribute('width', '70');
-      image.setAttribute('height', '70');
-      image.setAttribute('alt', 'Фотография жилья');
-      image.setAttribute('src', URL.createObjectURL(file));
+      image.width = '70';
+      image.height= '70';
+      image.alt = 'Фотография жилья';
+      image.src = URL.createObjectURL(file);
       imagesPreview.appendChild(image);
     } else {
       imagesPreview.firstElementChild.src = URL.createObjectURL(file);

@@ -1,3 +1,5 @@
+const MAX_PRICE = 100000;
+
 const priceField = document.querySelector('#price');
 const priceSlider = document.querySelector('.ad-form__slider');
 
@@ -10,7 +12,7 @@ const resetSlider = () => {
 noUiSlider.create(priceSlider, {
   range: {
     min: 0,
-    max: 100000,
+    max: MAX_PRICE,
   },
   start: 0,
   step: 1,
